@@ -1,2 +1,3 @@
-# python_group4_game_project
-A training project for METROPOLIA
+# Sky-Scavenger 2488
+
+### HERE NEED SOME DOCUMENTATION <3
