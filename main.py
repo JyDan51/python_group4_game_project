@@ -23,23 +23,274 @@ YOU DON'T NEED TO:
 This file is basically the main starting point of the whole game.
 """
 
-# Esimerkiksi myöhemmin:
-# import database
-# import game
-# import menu
+import os
+import subprocess
+
+#Myöhemmin importataan game, database ja menu
+
+def clear_screen():
+    command = "cls" if os.name == "nt" else "clear"
+    subprocess.run(command, shell=True, check=False)
+
+
+def choose_language():
+    clear_screen()
+
+    print("=== SKY-SCAVENGER 2488 ===")
+    print("\nChoose language / Valitse kieli")
+    print("1. English")
+    print("2. Suomi")
+
+    while True:
+        choice = input("\n> ")
+
+        if choice == "1":
+            return "en"
+
+        elif choice == "2":
+            return "fi"
+
+        else:
+            print("Invalid choice / Virheellinen valinta")
+
+def main_menu(language):
+    clear_screen()
+
+    print("==========================")
+    print("      SKY-SCAVENGER       ")
+    print("==========================")
+
+    if language == "en":
+        print("1. New Game")
+        print("2. Continue Game")
+        print("3. Help / Rules")
+        print("4. Exit")
+
+    else:
+        print("1. Uusi peli")
+        print("2. Jatka peliä")
+        print("3. Ohjeet / Säännöt")
+        print("4. Lopeta")
+
+def new_game(language):
+    clear_screen()
+
+    player = {
+        "money": 0,
+        "energy": 100,
+        "airport": "EFHK",
+        "contracts": []
+    }
+
+    if language == "en":
+        print("=== NEW GAME ===")
+        print("\nNew game created!")
+        print(f"Starting airport: {player['airport']}")
+        print(f"Money: {player['money']} €")
+        print(f"Energy: {player['energy']} %")
+        input("\nPress Enter to start...")
+
+    else:
+        print("=== UUSI PELI ===")
+        print("\nUusi peli luotu!")
+        print(f"Aloituslentokenttä: {player['airport']}")
+        print(f"Raha: {player['money']} €")
+        print(f"Energia: {player['energy']} %")
+        input("\nPaina Enter aloittaaksesi...")
+
+    return player
+
+
+def continue_game():
+    #Lataa aikaisemmin tallennetun pelin.
+    clear_screen()
+
+    print("=== CONTINUE GAME ===")
+
+    # Nooa tekee tietokantafunktion.
+    # player = database.load_player()
+    # return player
+
+    print("Save system is not ready yet.")
+    input("\nPress Enter to return...")
+
+    return None
+
+
+def show_player_status(player):
+    #Näyttää pelaajan nykyisen tilanteen.
+
+    print("==========================")
+    print("       PLAYER STATUS")
+    print("==========================")
+    print(f"Airport: {player['airport']}")
+    print(f"Money:   {player['money']} €")
+    print(f"Energy:  {player['energy']} %")
+
+
+def game_loop(player, language):
+    #Pelin pääsilmukka.
+
+    while True:
+
+        clear_screen()
+
+        show_player_status(player)
+
+        print("\n=== ACTIONS ===")
+        print("1. View available airports")
+        print("2. View cargo contracts")
+        print("3. Buy energy")
+        print("4. Save game")
+        print("5. Return to main menu")
+
+        choice = input("\nChoose an option: ")
+
+        if choice == "1":
+
+            clear_screen()
+
+            print("=== AVAILABLE AIRPORTS ===")
+
+            # Tähän yhdistetään Danin ja Nooan koodi.
+            #
+            # airports = database.get_airports(player["airport"])
+            #
+            # reachable = game.get_reachable_airports(
+            #     player,
+            #     airports
+            # )
+            # menu.show_airports(reachable)
+
+            print("Airport system is not ready yet.")
+
+            input("\nPress Enter to return...")
+
+
+        elif choice == "2":
+
+            clear_screen()
+
+            print("=== CARGO CONTRACTS ===")
+
+            # Nooa hakee sopimukset tietokannasta.
+            # contracts = database.get_contracts(
+            #     player["airport"]
+            # Anhelina näyttää ne käyttäjälle.
+            # menu.show_contracts(contracts)
+
+            print("Cargo contract system is not ready yet.")
+
+            input("\nPress Enter to return...")
+
+
+        elif choice == "3":
+
+            clear_screen()
+
+            print("=== BUY ENERGY ===")
+
+            # Dan tekee varsinaisen energialogiikan.
+            # player = game.buy_energy(player)
+
+            print("Energy purchasing is not ready yet.")
+
+            input("\nPress Enter to return...")
+
+
+        elif choice == "4":
+
+            clear_screen()
+
+            print("=== SAVE GAME ===")
+
+            # Nooan funktio tulee tähän myöhemmin.
+            # database.save_player(player)
+
+            print("Save system is not ready yet.")
+
+            input("\nPress Enter to return...")
+
+
+        elif choice == "5":
+
+            return
+
+        else:
+
+            print("\nInvalid choice.")
+            input("Press Enter to try again...")
+
+
+def show_help():
+    """Väliaikainen Help-näkymä."""
+
+    clear_screen()
+
+    #Anhelina tekee myöhemmin varsinaisen:
+    #
+    # menu.show_help()
+
+    print("==========================")
+    print("       HELP / RULES")
+    print("==========================")
+
+    print("\nHelp screen will be added later.")
+
+    input("\nPress Enter to return...")
 
 
 def main():
-    print("=" * 45)
-    print("SKY-SCAVENGER 2488")
-    print("=" * 45)
+    language = choose_language()
 
-    # TODO S:
-    # 1. Näytä päävalikko.
-    # 2. Pyydä käyttäjän valinta.
-    # 3. Kutsu valinnan perusteella oikeaa toimintoa.
-    # 4. Pidä peli käynnissä while-loopilla.
-    pass
+    while True:
+
+        main_menu(language)
+
+        if language == "en":
+            choice = input("\nChoose an option: ")
+        else:
+            choice = input("\nValitse vaihtoehto: ")
+
+        # New game
+        if choice == "1":
+            player = new_game(language)
+            game_loop(player, language)
+
+        # Continue game
+        elif choice == "2":
+            player = continue_game()
+
+            if player is not None:
+                game_loop(player, language)
+
+        # Help
+        elif choice == "3":
+            show_help()
+
+        # Pelistä poistuminen
+        elif choice == "4":
+            clear_screen()
+
+            if language == "en":
+                print("==========================")
+                print("Thanks for playing!")
+                print("==========================")
+            else:
+                print("==========================")
+                print("Kiitos pelaamisesta!")
+                print("==========================")
+
+            break
+
+        # Jos käyttäjä ilmoittaa jotain muuta, ei ohjelma hyväksy sitä.
+        else:
+            if language == "en":
+                print("\nInvalid choice.")
+                input("Press Enter to try again...")
+            else:
+                print("\nVirheellinen valinta.")
+                input("Paina Enter yrittääksesi uudelleen...")
 
 
 if __name__ == "__main__":

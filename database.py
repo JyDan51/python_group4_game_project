@@ -1,7 +1,6 @@
 """
 SKY-SCAVENGER 2488
 N:n tiedosto — Database & SQL Developer
-
 SINUN VASTUUSI:
 1. Tee yhteys MariaDB / flight_game -tietokantaan.
 2. Hae lentokenttien tiedot airport-taulusta.
