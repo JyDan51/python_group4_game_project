@@ -1,0 +1,15 @@
+-- SKY-SCAVENGER 2488
+-- N:n tiedosto — Database & SQL Developer
+--
+-- SINUN VASTUUSI:
+-- 1. Luo pelin tarvitsemat omat taulut.
+-- 2. Pelaajan tallennuksessa tarvitaan esimerkiksi:
+--      nimi
+--      raha
+--      energia
+--      nykyinen lentokenttä
+-- 3. Tee tarvittaessa rahtisopimusten taulu.
+-- 4. Älä poista flight_game-tietokannan valmista airport-taulua.
+-- 5. Varmista, että database.py käyttää samoja taulujen ja sarakkeiden nimiä.
+--
+-- TODO N: lisää CREATE TABLE -lauseet tähän.
