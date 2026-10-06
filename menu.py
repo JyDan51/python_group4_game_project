@@ -70,7 +70,52 @@ def show_help():
 
 # TODO A:
 # - show_airports(...)
+def show_airports(airports):
+    print("AVAILABLE AIRPORTS")
+    if not airports:
+        print("No airports available.")
+        return
+    for i, airport in enumerate(airports, start=1):
+        print(f"{i}. {airport}")
 # - show_contracts(...)
+def show_contracts(contracts):
+    """Näyttää saatavilla olevat rahtisopimukset."""
+    print("CARGO CONTRACTS")
+    if not contracts:
+        print("No cargo contracts available.")
+        return
+    for i, contract in enumerate(contracts, start=1):
+        print(f"{i}. {contract}")
 # - show_flight_information(...)
+def show_flight_information(
+        from_airport,
+        to_airport,
+        distance,
+        energy_required,
+        reward
+):
+    """Näyttää lennon tiedot."""
+    print("FLIGHT INFORMATION")
+    print(f"From: {from_airport}")
+    print(f"To: {to_airport}")
+    print(f"Distance: {distance:.1f} km")
+    print(f"Energy required: {energy_required}")
+    print(f"Reward: {reward} €")
 # - show_energy_warning(...)
+def show_energy_warning(current_energy, required_energy):   #jos lento käyttää lähes kaiken energian
+    if required_energy > current_energy:
+        print("\n!!! NOT ENOUGH ENERGY !!!")
+        print("You do not have enough energy for this flight.")
+    elif current_energy - required_energy <= 10:
+        print("\n!!! ENERGY WARNING !!!")
+        print("This flight will leave you with very little energy.")
 # - mahdolliset muut selkeät tulostusfunktiot
+def show_help():
+    print("HELP / RULES")
+    print("\n1. Fly between airports.")
+    print("2. Deliver cargo contracts.")
+    print("3. Flights consume energy.")
+    print("4. You can buy more energy.")
+    print("5. Successful deliveries give you money.")
+    print("6. Reach the target amount of money to win.")
+    print("7. Manage your energy carefully.")
