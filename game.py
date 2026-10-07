@@ -4,7 +4,7 @@ from math import ceil, radians, sin, cos, sqrt, atan2
 def calculate_distance(lat1, lon1, lat2, lon2):
     """Laskee kahden pisteen välisen etäisyyden kilometreinä."""
     earth_radius = 6371.0
-    # Converting degrees to radians for the Haversine s
+
     lat1 = radians(lat1)
     lon1 = radians(lon1)
     lat2 = radians(lat2)
@@ -19,7 +19,7 @@ def calculate_energy(distance):
     """Laskee lennon energiankulutuksen."""
     if distance <= 0:
         return 0
-    # Every 100 km started costs 1 unit of energy ; I thing we may make this stuff more like 69 or dont know
+
     return ceil(distance / 100)
 
 def can_fly(current_energy, required_energy):
@@ -50,7 +50,6 @@ def add_reward(player, reward):
 
 def buy_energy(player, amount):
     """Ostaa energiaa pelaajalle."""
-    # Price of energy, change it if need to.
     price = amount * 2
 
     if player["money"] >= price:

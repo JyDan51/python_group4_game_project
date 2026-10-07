@@ -1,6 +1,15 @@
 import os
-import mysql.connector
-from dotenv import load_dotenv
+
+try:
+    import mysql.connector
+except ModuleNotFoundError:
+    mysql = None
+
+try:
+    from dotenv import load_dotenv
+except ModuleNotFoundError:
+    def load_dotenv():
+        return None
 
 ## Lataa tietokannan asetukset .env-tiedostosta
 load_dotenv()
@@ -8,6 +17,10 @@ load_dotenv()
 
 def connect_database():
     """Palauttaa yhteyden pelin tietokantaan."""
+    if mysql is None:
+        print("MySQL connector is not installed.")
+        return None
+
     try:
         ## Yhdistää MariaDB:n flight_game-tietokantaan
         connection = mysql.connector.connect(
