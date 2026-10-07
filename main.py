@@ -25,8 +25,19 @@ This file is basically the main starting point of the whole game.
 
 import os
 import subprocess
+import json
 
-#Myöhemmin importataan game, database ja menu
+import game
+
+SAVE_FILE = "save_game.json"
+TARGET_MONEY = 1000
+
+AIRPORTS = {
+    "EFHK": {"name": "Helsinki-Vantaa", "lat": 60.3172, "lon": 24.9633},
+    "EFTU": {"name": "Turku", "lat": 60.5141, "lon": 22.2628},
+    "EFTP": {"name": "Tampere-Pirkkala", "lat": 61.4141, "lon": 23.6044},
+    "EFRO": {"name": "Rovaniemi", "lat": 66.5648, "lon": 25.8304},
+}
 
 def clear_screen():
     command = "cls" if os.name == "nt" else "clear"
@@ -100,21 +111,57 @@ def new_game(language):
 
     return player
 
-
 def continue_game():
     #Lataa aikaisemmin tallennetun pelin.
     clear_screen()
 
     print("=== CONTINUE GAME ===")
 
-    # Nooa tekee tietokantafunktion.
-    # player = database.load_player()
-    # return player
+    if not os.path.exists(SAVE_FILE):
+        print("No saved game found.")
+        input("\nPress Enter to return...")
+        return None
 
-    print("Save system is not ready yet.")
-    input("\nPress Enter to return...")
+    with open(SAVE_FILE, "r", encoding="utf-8") as file:
+        player = json.load(file)
 
-    return None
+    print("Saved game loaded.")
+    input("\nPress Enter to continue...")
+
+    return player
+
+
+def save_game(player):
+    with open(SAVE_FILE, "w", encoding="utf-8") as file:
+        json.dump(player, file)
+
+
+def get_available_airports(current_airport):
+    airports = []
+    current = AIRPORTS[current_airport]
+
+    for code, airport in AIRPORTS.items():
+        if code == current_airport:
+            continue
+
+        distance = game.calculate_distance(
+            current["lat"],
+            current["lon"],
+            airport["lat"],
+            airport["lon"]
+        )
+        energy = game.calculate_energy(distance)
+        reward = game.calculate_reward(distance)
+
+        airports.append({
+            "code": code,
+            "name": airport["name"],
+            "distance": distance,
+            "energy": energy,
+            "reward": reward
+        })
+
+    return airports
 
 
 def show_player_status(player):
@@ -138,8 +185,8 @@ def game_loop(player, language):
         show_player_status(player)
 
         print("\n=== ACTIONS ===")
-        print("1. View available airports")
-        print("2. View cargo contracts")
+        print("1. Fly to an airport")
+        print("2. Deliver cargo")
         print("3. Buy energy")
         print("4. Save game")
         print("5. Return to main menu")
@@ -152,17 +199,28 @@ def game_loop(player, language):
 
             print("=== AVAILABLE AIRPORTS ===")
 
-            # Tähän yhdistetään Danin ja Nooan koodi.
-            #
-            # airports = database.get_airports(player["airport"])
-            #
-            # reachable = game.get_reachable_airports(
-            #     player,
-            #     airports
-            # )
-            # menu.show_airports(reachable)
+            airports = get_available_airports(player["airport"])
 
-            print("Airport system is not ready yet.")
+            for number, airport in enumerate(airports, start=1):
+                print(
+                    f"{number}. {airport['code']} - {airport['name']} "
+                    f"({airport['distance']:.0f} km, {airport['energy']} energy)"
+                )
+
+            destination = input("\nChoose airport number: ")
+
+            if destination.isdigit() and 1 <= int(destination) <= len(airports):
+                airport = airports[int(destination) - 1]
+
+                if game.can_fly(player["energy"], airport["energy"]):
+                    player = game.use_energy(player, airport["energy"])
+                    player["airport"] = airport["code"]
+                    print(f"\nYou flew to {airport['code']}.")
+                    print(f"Energy used: {airport['energy']}")
+                else:
+                    print("\nNot enough energy.")
+            else:
+                print("\nInvalid choice.")
 
             input("\nPress Enter to return...")
 
@@ -173,13 +231,41 @@ def game_loop(player, language):
 
             print("=== CARGO CONTRACTS ===")
 
-            # Nooa hakee sopimukset tietokannasta.
-            # contracts = database.get_contracts(
-            #     player["airport"]
-            # Anhelina näyttää ne käyttäjälle.
-            # menu.show_contracts(contracts)
+            airports = get_available_airports(player["airport"])
 
-            print("Cargo contract system is not ready yet.")
+            for number, airport in enumerate(airports, start=1):
+                print(
+                    f"{number}. Deliver to {airport['code']} - {airport['name']} "
+                    f"for {airport['reward']} €"
+                )
+
+            contract = input("\nChoose contract number: ")
+
+            if contract.isdigit() and 1 <= int(contract) <= len(airports):
+                airport = airports[int(contract) - 1]
+
+                if game.can_fly(player["energy"], airport["energy"]):
+                    player = game.use_energy(player, airport["energy"])
+                    player = game.add_reward(player, airport["reward"])
+                    player["airport"] = airport["code"]
+                    print(f"\nDelivery completed to {airport['code']}.")
+                    print(f"Reward: {airport['reward']} €")
+                else:
+                    print("\nNot enough energy for this delivery.")
+            else:
+                print("\nInvalid choice.")
+
+            if game.check_win(player["money"], TARGET_MONEY):
+                print("\nYou won the game!")
+                save_game(player)
+                input("\nPress Enter to return...")
+                return
+
+            if game.check_loss(player["energy"], player["money"]):
+                print("\nYou lost the game.")
+                save_game(player)
+                input("\nPress Enter to return...")
+                return
 
             input("\nPress Enter to return...")
 
@@ -187,14 +273,17 @@ def game_loop(player, language):
         elif choice == "3":
 
             clear_screen()
-
             print("=== BUY ENERGY ===")
+            print("1 energy costs 2 €.")
+            print(f"Money: {player['money']} €")
+            print(f"Energy: {player['energy']} %")
+            amount = input("\nHow much energy do you want to buy? ")
 
-            # Dan tekee varsinaisen energialogiikan.
-            # player = game.buy_energy(player)
-
-            print("Energy purchasing is not ready yet.")
-
+            if amount.isdigit():
+                player = game.buy_energy(player, int(amount))
+                print("\nEnergy purchase finished.")
+            else:
+                print("\nInvalid amount.")
             input("\nPress Enter to return...")
 
 
@@ -204,10 +293,8 @@ def game_loop(player, language):
 
             print("=== SAVE GAME ===")
 
-            # Nooan funktio tulee tähän myöhemmin.
-            # database.save_player(player)
-
-            print("Save system is not ready yet.")
+            save_game(player)
+            print("Game saved.")
 
             input("\nPress Enter to return...")
 
@@ -235,7 +322,11 @@ def show_help():
     print("       HELP / RULES")
     print("==========================")
 
-    print("\nHelp screen will be added later.")
+    print("\nFly between airports, deliver cargo, and earn money.")
+    print("Flights use energy.")
+    print("You can buy energy for 2 € per energy.")
+    print(f"Reach {TARGET_MONEY} € to win.")
+    print("If both money and energy reach 0, you lose.")
 
     input("\nPress Enter to return...")
 
