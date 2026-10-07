@@ -25,7 +25,9 @@ This file is basically the main starting point of the whole game.
 
 import os
 import subprocess
-
+import game
+import database
+import menu
 #Myöhemmin importataan game, database ja menu
 
 def clear_screen():
@@ -75,7 +77,10 @@ def main_menu(language):
 def new_game(language):
     clear_screen()
 
+    name = input("Nimi/Name: ")
+
     player = {
+        "name" : name,
         "money": 0,
         "energy": 100,
         "airport": "EFHK",
@@ -107,14 +112,22 @@ def continue_game():
 
     print("=== CONTINUE GAME ===")
 
+    name = input("Name/Nimi: ")
+
+    player = database.load_player(name)
+
+    if player is None:
+        print("No saved game found")
+        input("\nPress enter to return...")
+        return None
     # Nooa tekee tietokantafunktion.
     # player = database.load_player()
     # return player
 
-    print("Save system is not ready yet.")
-    input("\nPress Enter to return...")
+    print("Game loaded succesfully.")
+    input("\nPress Enter to continue...")
 
-    return None
+    return player
 
 
 def show_player_status(player):
@@ -135,7 +148,11 @@ def game_loop(player, language):
 
         clear_screen()
 
-        show_player_status(player)
+        menu.show_status(
+            player["money"],
+            player["energy"],
+            player["airport"]
+        )
 
         print("\n=== ACTIONS ===")
         print("1. View available airports")
@@ -152,17 +169,9 @@ def game_loop(player, language):
 
             print("=== AVAILABLE AIRPORTS ===")
 
-            # Tähän yhdistetään Danin ja Nooan koodi.
-            #
-            # airports = database.get_airports(player["airport"])
-            #
-            # reachable = game.get_reachable_airports(
-            #     player,
-            #     airports
-            # )
-            # menu.show_airports(reachable)
 
-            print("Airport system is not ready yet.")
+            airports = database.get_airports()
+            menu.show_airports(airports)
 
             input("\nPress Enter to return...")
 
@@ -173,13 +182,8 @@ def game_loop(player, language):
 
             print("=== CARGO CONTRACTS ===")
 
-            # Nooa hakee sopimukset tietokannasta.
-            # contracts = database.get_contracts(
-            #     player["airport"]
-            # Anhelina näyttää ne käyttäjälle.
-            # menu.show_contracts(contracts)
-
-            print("Cargo contract system is not ready yet.")
+            contracts = database.get_contracts(player["airport"])
+            menu.show_contracts(contracts)
 
             input("\nPress Enter to return...")
 
@@ -190,10 +194,12 @@ def game_loop(player, language):
 
             print("=== BUY ENERGY ===")
 
-            # Dan tekee varsinaisen energialogiikan.
-            # player = game.buy_energy(player)
+            amount = int(input("How much energy do you want to buy? "))
 
-            print("Energy purchasing is not ready yet.")
+            player = game.buy_energy(player, amount)
+
+            print(f"\nMoney: {player['money']} €")
+            print(f"Energy: {player['energy']}")
 
             input("\nPress Enter to return...")
 
@@ -204,10 +210,10 @@ def game_loop(player, language):
 
             print("=== SAVE GAME ===")
 
-            # Nooan funktio tulee tähän myöhemmin.
-            # database.save_player(player)
-
-            print("Save system is not ready yet.")
+            if database.save_player(player):
+                print("Game saved successfully!")
+            else:
+                print("Saving failed.")
 
             input("\nPress Enter to return...")
 
@@ -223,21 +229,10 @@ def game_loop(player, language):
 
 
 def show_help():
-    """Väliaikainen Help-näkymä."""
-
-    clear_screen()
-
-    #Anhelina tekee myöhemmin varsinaisen:
-    #
-    # menu.show_help()
-
-    print("==========================")
-    print("       HELP / RULES")
-    print("==========================")
-
-    print("\nHelp screen will be added later.")
-
-    input("\nPress Enter to return...")
+        
+        clear_screen()
+        menu.show_help()
+        input("\nPress Enter to return...")
 
 
 def main():
