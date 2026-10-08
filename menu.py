@@ -1,29 +1,3 @@
-"""
-SKY-SCAVENGER 2488
-A:n tiedosto — Menu, UX & Testing Developer
-
-SINUN VASTUUSI:
-1. Tee selkeät käyttäjälle näkyvät valikot ja tulostukset.
-2. Tarkista käyttäjän syötteet niin, ettei peli kaadu väärään syötteeseen.
-3. Tee kyllä/ei-vahvistukset esimerkiksi ennen lentoa.
-4. Näytä pelaajan tilanne:
-      - raha
-      - energia
-      - nykyinen lentokenttä
-      - aktiiviset rahtisopimukset
-5. Näytä lentokenttä- ja lentotiedot selkeästi.
-6. Näytä rahtisopimukset selkeästi.
-7. Tee pelin Help / Rules -näkymä.
-8. Tee varoitus, jos lento käyttää lähes kaiken energian.
-9. Osallistu testaukseen ja korjaa käyttöliittymään liittyviä bugeja.
-10. Tee tests/-kansion testejä yhdessä muiden kanssa.
-11. Viimeistele dokumentaatiota yhdessä ryhmän kanssa.
-
-HUOM:
-S tekee main.py:n päävalikon toimintalogiikan.
-Sinä teet valikoiden näyttämiseen ja käyttäjän syötteisiin liittyvät
-uudelleenkäytettävät funktiot.
-"""
 import re
 
 ##varoitus annetaan, jos lennot jälkeen energia jää tämä verran tai vähemmän
