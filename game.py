@@ -50,6 +50,8 @@ def add_reward(player, reward):
 
 def buy_energy(player, amount):
     """Ostaa energiaa pelaajalle."""
+    if amount <= 0:
+        return player
     price = amount * 2
 
     if player["money"] >= price:
@@ -57,6 +59,6 @@ def buy_energy(player, amount):
         player["energy"] = player["energy"] + amount
     return player
 
-def check_loss(energy, money):
+def check_loss(energy, money, minimum_energy=1):
     """Tarkistaa yksinkertaisen häviöehdon."""
-    return energy <= 0 and money <= 0
+    return energy + money // 2 < minimum_energy

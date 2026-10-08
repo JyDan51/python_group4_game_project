@@ -21,18 +21,32 @@ def connect_database():
         print("MySQL connector is not installed.")
         return None
 
+    connection = None
     try:
         ## Yhdistää MariaDB:n flight_game-tietokantaan
         connection = mysql.connector.connect(
             host=os.getenv("DB_HOST"),
+            port=int(os.getenv("DB_PORT", "3306")),
             user=os.getenv("DB_USER"),
             password=os.getenv("DB_PASSWORD"),
-            database="flight_game"
+            database=os.getenv("DB_NAME", "flight_game"),
+            connection_timeout=5
         )
 
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS player (
+                    name VARCHAR(100) PRIMARY KEY,
+                    money INT NOT NULL DEFAULT 0,
+                    energy INT NOT NULL DEFAULT 100,
+                    airport VARCHAR(10) NOT NULL DEFAULT 'EFHK'
+                )
+            """)
         return connection
 
-    except mysql.connector.Error as error:
+    except (mysql.connector.Error, ValueError) as error:
+        if connection is not None:
+            connection.close()
         ## Estää ohjelmaa kaatumasta tietokantavirheeseen
         print("Tietokantayhteys epäonnistui:", error)
         return None

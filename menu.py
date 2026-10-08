@@ -71,7 +71,7 @@ TEXTS = {
         "buy_no_money": "Not enough money. {amount} energy costs {price} €.",
         "buy_invalid": "Invalid amount. Enter a positive number.",
         "win": "CONGRATULATIONS! You reached the target and won the game!",
-        "loss": "GAME OVER. You are out of energy and money.",
+        "loss": "GAME OVER. You cannot afford enough energy for any flight.",
         "help_title": "HELP / RULES",
         "help_lines": [
             "1. Fly between airports.",
@@ -120,7 +120,7 @@ TEXTS = {
         "buy_no_money": "Rahat eivät riitä. {amount} energiaa maksaa {price} €.",
         "buy_invalid": "Virheellinen määrä. Anna positiivinen luku.",
         "win": "ONNITTELUT! Saavutit tavoitteen ja voitit pelin!",
-        "loss": "PELI PÄÄTTYI. Energia ja rahat ovat lopussa.",
+        "loss": "PELI PÄÄTTYI. Energia ja rahat eivät riitä yhteenkään lentoon.",
         "help_title": "OHJEET / SÄÄNNÖT",
         "help_lines": [
             "1. Lennä lentokenttien välillä.",

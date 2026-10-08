@@ -29,9 +29,12 @@ import json
 
 import game
 import menu
+import database
 
-SAVE_FILE = "save_game.json"
-TARGET_MONEY = 1000
+USE_DATABASE = False
+
+SAVE_FILE = os.path.join(os.path.dirname(__file__), "save_game.json")
+TARGET_MONEY = 5000
 ENERGY_PRICE = 2  #on vastattava hintaa, jota käytetään funktiossa game.buy_energy
 
 AIRPORTS = {
@@ -126,6 +129,13 @@ def is_valid_save(data):
     for key in ("money", "energy"):
         if not isinstance(data.get(key), int) or isinstance(data.get(key), bool):
             return False
+        if data[key] < 0:
+            return False
+
+    if not isinstance(data.get("airport"), str):
+        return False
+    if not isinstance(data.get("contracts", []), list):
+        return False
  
     return data.get("airport") in AIRPORTS
 
@@ -136,22 +146,26 @@ def continue_game(language):
 
     print(tr(language, "=== CONTINUE GAME ===", "=== JATKA PELIÄ ==="))
 
-    if not os.path.exists(SAVE_FILE):
+    if not USE_DATABASE and not os.path.exists(SAVE_FILE):
         print(tr(language, "\nNo saved game found.", "\nTallennettua peliä ei löytynyt."))
         input(tr(language, "\nPress Enter to return...", "\nPaina Enter palataksesi..."))
         return None
     
     try:
-        with open(SAVE_FILE, "r", encoding="utf-8") as file:
-            player = json.load(file)
-    except (OSError, json.JSONDecodeError):
+        if USE_DATABASE:
+            name = menu.ask_text(tr(language, "Name: ", "Nimi: "), language=language)
+            player = database.load_player(name)
+        else:
+            with open(SAVE_FILE, "r", encoding="utf-8") as file:
+                player = json.load(file)
+    except (OSError, ValueError):
         player = None
 
     if not is_valid_save(player):
         print(tr(
             language,
-            "\nThe save file is damaged and could not be loaded.",
-            "\nTallennustiedosto on vioittunut eikä sitä voitu ladata."
+            "\nSave not found or could not be loaded.",
+            "\nTallennusta ei löytynyt tai lataus epäonnistui."
         ))
         input(tr(language, "\nPress Enter to return...", "\nPaina Enter palataksesi..."))
         return None
@@ -167,6 +181,8 @@ def continue_game(language):
 
 
 def save_game(player):
+    if USE_DATABASE:
+        return database.save_player(player)
     try:
         with open(SAVE_FILE, "w", encoding="utf-8") as file:
             json.dump(player, file)
@@ -278,7 +294,8 @@ def check_game_end(player, language):
         menu.show_game_result(True, language)
         return True
  
-    if game.check_loss(player["energy"], player["money"]):
+    minimum_energy = min(a["energy"] for a in get_available_airports(player["airport"]))
+    if game.check_loss(player["energy"], player["money"], minimum_energy):
         menu.show_game_result(False, language)
         return True
  
@@ -325,6 +342,10 @@ def game_loop(player, language):
     while True:
 
         clear_screen()
+
+        if check_game_end(player, language):
+            input(tr(language, "\nPress Enter to return...", "\nPaina Enter palataksesi..."))
+            return
 
         menu.show_status(
             player["money"],
@@ -410,7 +431,17 @@ def show_help(language):
     input(tr(language, "\nPress Enter to return...", "\nPaina Enter palataksesi..."))
 
 def main():
+    global USE_DATABASE
     language = choose_language()
+    airports = database.get_airports()
+    USE_DATABASE = bool(airports)
+    for airport in airports:
+        if airport["latitude_deg"] is not None and airport["longitude_deg"] is not None:
+            AIRPORTS[airport["ident"]] = {"name": airport["name"],
+                "lat": float(airport["latitude_deg"]), "lon": float(airport["longitude_deg"])}
+    print(tr(language, "Saves: database." if USE_DATABASE else "Database unavailable. Saves: local file.",
+             "Tallennus: tietokanta." if USE_DATABASE else "Tietokanta ei ole käytettävissä. Tallennus: tiedosto."))
+    input(tr(language, "\nPress Enter to continue...", "\nPaina Enter jatkaaksesi..."))
  
     while True:
  
