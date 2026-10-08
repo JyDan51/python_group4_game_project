@@ -8,3 +8,6 @@ __pycache__/
 # macOS / VS Code
 .DS_Store
 .vscode/
+
+# Local game saves
+save_game.json

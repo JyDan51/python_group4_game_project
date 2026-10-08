@@ -1,13 +1,3 @@
-"""
-A + D
-Testatkaa game.py:n pelilogiikkaa tässä.
-
-Esimerkkejä:
-- saman pisteen etäisyys = 0 km
-- energia lasketaan oikein
-- peli ei salli lentoa, jos energia ei riitä
-- voittoehto toimii
-"""
 
 from game import calculate_distance
 
